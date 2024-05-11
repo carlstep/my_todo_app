@@ -6,13 +6,14 @@ class TodoProvider extends ChangeNotifier {
   final List<Todo> _todoList = [
     // example todo
     Todo(
-      todoTitle: 'code challenge',
-      isComplete: false,
-    ),
+        todoTitle: 'code challenge',
+        isComplete: false,
+        todoDescription: 'complete the todo app coding challenge...'),
     Todo(
-      todoTitle: 'bike ride',
-      isComplete: false,
-    ),
+        todoTitle: 'bike ride',
+        isComplete: false,
+        todoDescription:
+            'complete 20km bike ride to improve fitness and clear mind...'),
   ];
 
   // getter -> list of all todo actions
@@ -22,13 +23,19 @@ class TodoProvider extends ChangeNotifier {
   void addNewTodo(Todo todo) {
     todoList.add(todo);
     notifyListeners();
-    print(todo.todoTitle);
   }
 
   // method to delete todo from todoList
   void deleteTodoItem(int index) {
     todoList.removeAt(index);
 
+    notifyListeners();
+  }
+
+  // method to edit existing todo item and save changes
+  void updateTodo(int index, String newTitle, String newDescription) {
+    todoList[index].todoTitle = newTitle;
+    todoList[index].todoDescription = newDescription;
     notifyListeners();
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:my_todo_app/components/my_todo_card.dart';
 import 'package:my_todo_app/models/todo_provider.dart';
 import 'package:my_todo_app/models/todo_model.dart';
@@ -12,8 +13,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // text controller for todo name
-  final TextEditingController todoNameController = TextEditingController();
+  // text controller for todo title
+  final TextEditingController todoTitleController = TextEditingController();
+  // text controller for todo description
+  final TextEditingController todoDescriptionController =
+      TextEditingController();
 
   // method to add new todo
   void addNewTodo() {
@@ -25,14 +29,31 @@ class _HomePageState extends State<HomePage> {
             height: 300,
             width: 300,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextField(
-                  controller: todoNameController,
+                  keyboardType: TextInputType.text,
+                  controller: todoTitleController,
                   decoration: const InputDecoration(hintText: 'todo name...'),
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 20,
+                ),
+                SizedBox(
+                  height: 140,
+                  child: TextField(
+                    keyboardType: TextInputType.text,
+                    minLines: 3,
+                    maxLines: 5,
+                    controller: todoDescriptionController,
+                    decoration:
+                        const InputDecoration(hintText: 'todo description...'),
+                  ),
+                ),
+                const Expanded(
+                  child: SizedBox(
+                    height: 5,
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -41,11 +62,13 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         context.read<TodoProvider>().addNewTodo(
                               Todo(
-                                todoTitle: todoNameController.text,
+                                todoTitle: todoTitleController.text,
+                                todoDescription: todoDescriptionController.text,
                                 isComplete: false,
                               ),
                             );
-                        todoNameController.clear();
+                        todoTitleController.clear();
+                        todoDescriptionController.clear();
                         Navigator.of(context).pop();
                       },
                       child: const Text('save'),
@@ -93,6 +116,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Provider.of<TodoProvider>(context, listen: false)
                           .deleteTodoItem(index);
+
                       Navigator.of(context).pop();
                     },
                     child: const Text('delete'),
@@ -112,7 +136,79 @@ class _HomePageState extends State<HomePage> {
         .updateCheckbox(value, index);
   }
 
-  // edit todo item
+  // edit existing todo item
+  void editTodo(int index) {
+    // retrieve the todoList
+    final todoList = Provider.of<TodoProvider>(context, listen: false);
+    // access the specific todo item
+    final todo = todoList.todoList[index];
+
+    print('edit $index');
+    todoTitleController.text = todo.todoTitle;
+    todoDescriptionController.text = todo.todoDescription;
+
+    // display todo data[index] >> enter new todo data >> save new data to todo[index]
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: SizedBox(
+              height: 300,
+              width: 300,
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'edit todo item',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextField(
+                    controller: todoTitleController,
+                  ),
+                  TextField(
+                    textAlign: TextAlign.start,
+                    keyboardType: TextInputType.text,
+                    minLines: 3,
+                    maxLines: 5,
+                    controller: todoDescriptionController,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('cancel'),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          final newTitle = todoTitleController.text;
+                          final newDescription = todoDescriptionController.text;
+                          todoList.updateTodo(index, newTitle, newDescription);
+                          todoTitleController.clear();
+                          todoDescriptionController.clear();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('save'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
   // share todo item to calendar
 
@@ -134,7 +230,6 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  const Text('list of todo actions'),
                   Expanded(
                     child: ListView.builder(
                         itemCount: value.todoList.length,
@@ -142,12 +237,11 @@ class _HomePageState extends State<HomePage> {
                           // provide a list of all todo items
                           Todo eachTodo = value.todoList[index];
 
-                          print(eachTodo.todoTitle);
-
                           return MyTodoCard(
                             todo: eachTodo,
                             onChanged: (value) => toggleCheckbox(value, index),
                             deleteFunction: (context) => deleteTodo(index),
+                            editFunction: (context) => editTodo(index),
                           );
                         }),
                   ),
