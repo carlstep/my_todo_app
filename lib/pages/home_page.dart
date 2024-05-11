@@ -67,9 +67,10 @@ class _HomePageState extends State<HomePage> {
                                 isComplete: false,
                               ),
                             );
+
+                        Navigator.of(context).pop();
                         todoTitleController.clear();
                         todoDescriptionController.clear();
-                        Navigator.of(context).pop();
                       },
                       child: const Text('save'),
                     ),
@@ -118,6 +119,8 @@ class _HomePageState extends State<HomePage> {
                           .deleteTodoItem(index);
 
                       Navigator.of(context).pop();
+                      todoTitleController.clear();
+                      todoDescriptionController.clear();
                     },
                     child: const Text('delete'),
                   ),
@@ -184,6 +187,8 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
+                          todoTitleController.clear();
+                          todoDescriptionController.clear();
                         },
                         child: const Text('cancel'),
                       ),
@@ -195,9 +200,10 @@ class _HomePageState extends State<HomePage> {
                           final newTitle = todoTitleController.text;
                           final newDescription = todoDescriptionController.text;
                           todoList.updateTodo(index, newTitle, newDescription);
+
+                          Navigator.pop(context);
                           todoTitleController.clear();
                           todoDescriptionController.clear();
-                          Navigator.pop(context);
                         },
                         child: const Text('save'),
                       ),
