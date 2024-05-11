@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
         .updateCheckbox(value, index);
   }
 
-  // edit existing todo item
+  // function >> edit existing todo item
   void editTodo(int index) {
     // retrieve the todoList
     final todoList = Provider.of<TodoProvider>(context, listen: false);
@@ -169,6 +169,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   TextField(
+                    // displays the exisitng todoTitle
                     controller: todoTitleController,
                   ),
                   TextField(
@@ -176,6 +177,7 @@ class _HomePageState extends State<HomePage> {
                     keyboardType: TextInputType.text,
                     minLines: 3,
                     maxLines: 5,
+                    // displays the exisitng todoDescription
                     controller: todoDescriptionController,
                   ),
                   const SizedBox(
@@ -185,6 +187,7 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
+                        // cancel button, changes not saved, controllers cleared
                         onPressed: () {
                           Navigator.pop(context);
                           todoTitleController.clear();
@@ -196,12 +199,16 @@ class _HomePageState extends State<HomePage> {
                         width: 20,
                       ),
                       ElevatedButton(
+                        // changes made to todoTitleController saved to newTitle
+                        // changes made to todoDescriptionController saved to newDescription
                         onPressed: () {
                           final newTitle = todoTitleController.text;
                           final newDescription = todoDescriptionController.text;
+                          // index, newTitle, newDescription >> passed thru to todoList.updateTodo
                           todoList.updateTodo(index, newTitle, newDescription);
 
                           Navigator.pop(context);
+                          // clears the controllers
                           todoTitleController.clear();
                           todoDescriptionController.clear();
                         },
