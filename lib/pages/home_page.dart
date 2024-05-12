@@ -60,13 +60,16 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        context.read<TodoProvider>().addNewTodo(
-                              Todo(
-                                todoTitle: todoTitleController.text,
-                                todoDescription: todoDescriptionController.text,
-                                isComplete: false,
-                              ),
-                            );
+                        if (todoTitleController.text.isNotEmpty) {
+                          context.read<TodoProvider>().addNewTodo(
+                                Todo(
+                                  todoTitle: todoTitleController.text,
+                                  todoDescription:
+                                      todoDescriptionController.text,
+                                  isComplete: false,
+                                ),
+                              );
+                        }
 
                         Navigator.of(context).pop();
                         todoTitleController.clear();
@@ -146,7 +149,6 @@ class _HomePageState extends State<HomePage> {
     // access the specific todo item
     final todo = todoList.todoList[index];
 
-    print('edit $index');
     todoTitleController.text = todo.todoTitle;
     todoDescriptionController.text = todo.todoDescription;
 
@@ -205,8 +207,11 @@ class _HomePageState extends State<HomePage> {
                           final newTitle = todoTitleController.text;
                           final newDescription = todoDescriptionController.text;
                           // index, newTitle, newDescription >> passed thru to todoList.updateTodo
-                          todoList.updateTodo(index, newTitle, newDescription);
 
+                          if (todoTitleController.text.isNotEmpty) {
+                            todoList.updateTodo(
+                                index, newTitle, newDescription);
+                          }
                           Navigator.pop(context);
                           // clears the controllers
                           todoTitleController.clear();
